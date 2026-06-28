@@ -26,14 +26,19 @@ class Path:
         self._closed = False
 
     @property
-    def points(self):
-
+    def points(self) -> list[PathPoint]:
+        """Returns all points in the path."""
         return self._points
 
     @property
-    def closed(self):
-
+    def closed(self) -> bool:
+        """Returns True if the path is closed."""
         return self._closed
+
+    @property
+    def count(self) -> int:
+        """Returns the number of points in the path."""
+        return len(self._points)
 
     def move_to(self, x: float, y: float):
 
