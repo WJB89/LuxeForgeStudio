@@ -1,25 +1,22 @@
+from .addon import LuxeForgeAddon
+
 bl_info = {
     "name": "LuxeForge Studio",
     "author": "Wesley",
-    "version": (0, 1, 0),
+    "version": (0, 3, 0),
     "blender": (5, 0, 0),
     "location": "View3D > Sidebar > LuxeForge",
-    "description": "Professional parametric luxury accessory generator.",
+    "description": "Procedural luxury accessories engine.",
     "category": "3D View",
 }
 
-from . import panel
-from . import operators
-
 
 def register():
-    operators.register()
-    panel.register()
+    LuxeForgeAddon.register()
 
 
 def unregister():
-    panel.unregister()
-    operators.unregister()
+    LuxeForgeAddon.unregister()
 
 
 if __name__ == "__main__":

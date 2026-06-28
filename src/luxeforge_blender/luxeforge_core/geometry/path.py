@@ -15,26 +15,32 @@ class Path:
     Represents a 2D CAD path.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
 
         self._points: list[Point] = []
         self._closed = False
 
     @property
     def points(self) -> list[Point]:
-        """Returns all points."""
+        """
+        Returns all points.
+        """
 
         return self._points
 
     @property
     def closed(self) -> bool:
-        """Returns True if the path is closed."""
+        """
+        Returns True if the path is closed.
+        """
 
         return self._closed
 
     @property
     def count(self) -> int:
-        """Returns the number of points."""
+        """
+        Returns the number of points.
+        """
 
         return len(self._points)
 
@@ -48,7 +54,7 @@ class Path:
         """
 
         self._points = [
-            Point(x, y)
+            Point(x, y),
         ]
 
         return self
@@ -62,26 +68,27 @@ class Path:
         Adds a straight line.
         """
 
-     def add_points(
-         self,
-         points: list[Point],
-     ) -> "Path":
-    """
-    Adds multiple points to the path.
+        self._points.append(
+            Point(x, y),
+        )
 
-    The first point is skipped to avoid duplicate
-    vertices when connecting geometry.
-    """
-
-    if not points:
         return self
 
-    self._points.extend(points[1:])
+    def add_points(
+        self,
+        points: list[Point],
+    ) -> "Path":
+        """
+        Adds multiple points.
 
-    return self
-        self._points.append(
-            Point(x, y)
-        )
+        The first point is skipped to avoid duplicate
+        vertices.
+        """
+
+        if not points:
+            return self
+
+        self._points.extend(points[1:])
 
         return self
 
@@ -95,9 +102,6 @@ class Path:
     ) -> "Path":
         """
         Adds a circular arc.
-
-        The first generated point is skipped to prevent
-        duplicate vertices.
         """
 
         arc = Arc(
@@ -108,11 +112,9 @@ class Path:
             segments=segments,
         )
 
-        points = arc.generate_points()
-
-        if points:
-
-            self._points.extend(points[1:])
+        self.add_points(
+            arc.generate_points(),
+        )
 
         return self
 
@@ -135,3 +137,27 @@ class Path:
         self._closed = False
 
         return self
+
+    def __len__(self) -> int:
+        """
+        Returns the number of points.
+        """
+
+        return len(self._points)
+
+    def __iter__(self):
+        """
+        Iterates over all points.
+        """
+
+        return iter(self._points)
+
+    def __repr__(self) -> str:
+        """
+        Returns a readable representation.
+        """
+
+        return (
+            f"Path(points={len(self)}, "
+            f"closed={self.closed})"
+        )

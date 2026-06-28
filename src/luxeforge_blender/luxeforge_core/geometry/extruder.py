@@ -3,9 +3,9 @@ LuxeForge Studio
 
 Profile Extruder
 """
-from luxeforge_core.geometry.mesh_data import MeshData
-
 from __future__ import annotations
+
+from .mesh_data import MeshData
 
 from .path import Path
 

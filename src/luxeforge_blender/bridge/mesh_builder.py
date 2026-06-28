@@ -1,34 +1,51 @@
 """
 LuxeForge Studio
 
-Bag Service
+Mesh Builder
+
+Converts MeshData into a Blender mesh.
 """
 
 from __future__ import annotations
 
-from luxeforge_core.engine.body.classic_body import ClassicBodyEngine
-from luxeforge_core.geometry.mesh_data import MeshData
-from luxeforge_core.models.bag_parameters import BagParameters
+import bpy
+
+from ..luxeforge_core.geometry.mesh_data import MeshData
 
 
-class BagService:
+class MeshBuilder:
     """
-    High-level service responsible for generating bags.
-
-    The service orchestrates the different engines that
-    make up a bag. At the moment only the body is generated.
+    Creates Blender mesh objects from MeshData.
     """
 
-    def generate(
-        self,
-        params: BagParameters,
-    ) -> MeshData:
+    @staticmethod
+    def create_mesh(
+        name: str,
+        mesh_data: MeshData,
+    ) -> bpy.types.Object:
         """
-        Generates a bag.
+        Creates a Blender object from MeshData.
         """
 
-        body_engine = ClassicBodyEngine()
+        mesh = bpy.data.meshes.new(name)
 
-        mesh = body_engine.build(params)
+        mesh.from_pydata(
+            mesh_data.vertices,
+            [],
+            mesh_data.faces,
+        )
 
-        return mesh
+        mesh.update()
+
+        obj = bpy.data.objects.new(
+            name,
+            mesh,
+        )
+
+        bpy.context.collection.objects.link(obj)
+
+        bpy.context.view_layer.objects.active = obj
+
+        obj.select_set(True)
+
+        return obj

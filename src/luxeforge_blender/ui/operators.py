@@ -1,31 +1,57 @@
+"""
+LuxeForge Studio
+
+Generate Bag Operator.
+"""
+
+from __future__ import annotations
+
 import bpy
 
-from .models.bag_parameters import BagParameters
-from .services.bag_service import BagService
-from .geometry.profile_generator import ProfileGenerator
-from .utils.logger import log
+from ..bridge.mesh_builder import MeshBuilder
+
+from ..luxeforge_core.models.bag_parameters import BagParameters
+from ..luxeforge_core.services.bag_service import BagService
 
 
 class LFS_OT_GenerateBag(bpy.types.Operator):
-    """Generate a bag."""
+    """
+    Generates a LuxeForge bag.
+    """
 
     bl_idname = "lfs.generate_bag"
     bl_label = "Generate Bag"
 
-    def execute(self, context):
+    def execute(
+        self,
+        context,
+    ):
+
+        #
+        # Create default parameters
+        #
 
         params = BagParameters()
 
-        profile = ProfileGenerator().generate(params)
+        #
+        # Generate mesh data
+        #
 
-        log("Generated profile:")
-        log(str(profile))
+        mesh_data = BagService().generate(params)
 
-        service = BagService()
+        #
+        # Create Blender object
+        #
 
-        service.generate(params)
+        MeshBuilder.create_mesh(
+            "LFS_ClassicBag",
+            mesh_data,
+        )
 
-        self.report({"INFO"}, "Bag generated.")
+        self.report(
+            {"INFO"},
+            "Classic bag generated.",
+        )
 
         return {"FINISHED"}
 
@@ -36,10 +62,12 @@ classes = (
 
 
 def register():
+
     for cls in classes:
         bpy.utils.register_class(cls)
 
 
 def unregister():
+
     for cls in reversed(classes):
         bpy.utils.unregister_class(cls)

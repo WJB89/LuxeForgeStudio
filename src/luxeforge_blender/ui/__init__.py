@@ -1,26 +1,7 @@
-bl_info = {
-    "name": "LuxeForge Studio",
-    "author": "Wesley",
-    "version": (0, 1, 0),
-    "blender": (5, 0, 0),
-    "location": "View3D > Sidebar > LuxeForge",
-    "description": "Professional parametric luxury accessory generator.",
-    "category": "3D View",
-}
+"""
+LuxeForge Studio
 
-from . import panel
-from . import operators
+UI Package
+"""
 
-
-def register():
-    operators.register()
-    panel.register()
-
-
-def unregister():
-    panel.unregister()
-    operators.unregister()
-
-
-if __name__ == "__main__":
-    register()
+from __future__ import annotations

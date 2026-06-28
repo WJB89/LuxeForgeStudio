@@ -6,10 +6,10 @@ Classic Body Engine
 
 from __future__ import annotations
 
-from luxeforge_core.engine.body.profiles.classic_profile import ClassicProfile
-from luxeforge_core.geometry.extruder import Extruder
-from luxeforge_core.models.bag_parameters import BagParameters
-from luxeforge_core.geometry.mesh_data import MeshData
+from .profiles.classic_profile import ClassicProfile
+from ...geometry.extruder import Extruder
+from ...models.bag_parameters import BagParameters
+from ...geometry.mesh_data import MeshData
 
 
 class ClassicBodyEngine:

@@ -6,8 +6,8 @@ Classic Body Profile
 
 from __future__ import annotations
 
-from luxeforge_core.geometry.path import Path
-from luxeforge_core.models.bag_parameters import BagParameters
+from ....geometry.path import Path
+from ....models.bag_parameters import BagParameters
 
 
 class ClassicProfile:

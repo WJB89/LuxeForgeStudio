@@ -3,7 +3,7 @@ LuxeForge Studio
 
 Build Tool
 
-Creates a distributable Blender add-on ZIP archive.
+Packages the Blender add-on into a distributable ZIP archive.
 """
 
 from __future__ import annotations
@@ -18,33 +18,39 @@ from zipfile import ZIP_DEFLATED, ZipFile
 # Repository paths
 # -------------------------------------------------
 
-REPOSITORY_ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent
 
-SOURCE_DIR = REPOSITORY_ROOT / "src" / "luxeforge_blender"
+ADDON_DIR = ROOT / "src" / "luxeforge_blender"
 
-RELEASE_DIR = REPOSITORY_ROOT / "release"
+RELEASE_DIR = ROOT / "release"
 
 
 # -------------------------------------------------
-# Helpers
+# Console
 # -------------------------------------------------
 
-def print_header():
+def title():
 
-    print("=" * 50)
+    print("=" * 60)
     print("LuxeForge Studio Build Tool")
-    print("=" * 50)
+    print("=" * 60)
     print()
 
 
+def info(message: str):
+
+    print(f"✓ {message}")
+
+
+# -------------------------------------------------
+# Version
+# -------------------------------------------------
+
 def get_version() -> str:
-    """
-    Reads the version from utils/version.py.
-    Falls back to 'dev' if unavailable.
-    """
 
     version_file = (
-        SOURCE_DIR
+        ADDON_DIR
+        / "luxeforge_core"
         / "utils"
         / "version.py"
     )
@@ -53,32 +59,70 @@ def get_version() -> str:
 
     try:
 
-        exec(version_file.read_text(encoding="utf8"), namespace)
+        exec(
+            version_file.read_text(
+                encoding="utf8"
+            ),
+            namespace,
+        )
 
-        return namespace.get("VERSION_STRING", "dev")
+        return namespace.get(
+            "VERSION_STRING",
+            "dev",
+        )
 
     except Exception:
 
         return "dev"
 
 
+# -------------------------------------------------
+# Validation
+# -------------------------------------------------
+
 def validate():
 
-    if not SOURCE_DIR.exists():
+    if not ADDON_DIR.exists():
 
-        raise FileNotFoundError(
-            f"Add-on folder not found:\n{SOURCE_DIR}"
+        raise RuntimeError(
+            "Blender add-on folder not found."
         )
 
+    if not (ADDON_DIR / "__init__.py").exists():
 
-def prepare_release_folder():
+        raise RuntimeError(
+            "__init__.py missing."
+        )
 
-    if RELEASE_DIR.exists():
+    info("Repository validated")
 
-        shutil.rmtree(RELEASE_DIR)
 
-    RELEASE_DIR.mkdir(parents=True)
+# -------------------------------------------------
+# Release folder
+# -------------------------------------------------
 
+def prepare_release():
+
+    RELEASE_DIR.mkdir(exist_ok=True)
+
+for file in RELEASE_DIR.glob("*.zip"):
+
+    try:
+
+        file.unlink()
+
+    except PermissionError:
+
+        print()
+        print("WARNING")
+        print(f"Cannot remove {file.name}")
+        print("Close Blender or Explorer and try again.")
+        raise
+
+
+# -------------------------------------------------
+# Build ZIP
+# -------------------------------------------------
 
 def build_zip():
 
@@ -91,20 +135,25 @@ def build_zip():
     with ZipFile(
         zip_path,
         "w",
-        compression=ZIP_DEFLATED,
+        ZIP_DEFLATED,
     ) as archive:
 
-        for file in SOURCE_DIR.rglob("*"):
+        for file in ADDON_DIR.rglob("*"):
 
             if file.is_dir():
                 continue
 
-            archive_name = file.relative_to(SOURCE_DIR)
+            archive_name = (
+                Path("luxeforge_blender")
+                / file.relative_to(ADDON_DIR)
+            )
 
             archive.write(
                 file,
                 archive_name.as_posix(),
             )
+
+    info("ZIP archive created")
 
     return zip_path
 
@@ -115,31 +164,28 @@ def build_zip():
 
 def main():
 
-    print_header()
+    title()
 
     try:
 
         validate()
 
-        print("✓ Repository validated")
+        prepare_release()
 
-        prepare_release_folder()
+        output = build_zip()
 
-        print("✓ Release folder prepared")
-
-        zip_path = build_zip()
-
-        print("✓ Build completed")
         print()
-        print("Output:")
-        print(zip_path)
+        print("Build completed successfully.")
+        print()
+        print(output)
 
         return 0
 
     except Exception as error:
 
         print()
-        print("Build failed")
+        print("BUILD FAILED")
+        print()
         print(error)
 
         return 1
