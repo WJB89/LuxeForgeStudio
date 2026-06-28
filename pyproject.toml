@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "LuxeForgeStudio"
+version = "0.1.0-alpha.1"
+description = "Professional Blender Add-on for generating luxury-inspired 3D printable accessories."
+authors = [
+    { name = "Wesley" }
+]
+requires-python = ">=3.11"
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
