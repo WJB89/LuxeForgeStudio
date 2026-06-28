@@ -1,47 +1,61 @@
 """
 LuxeForge Studio
 
-Geometry Builder
+Geometry Path
 """
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 
-class GeometryBuilder:
+
+@dataclass(slots=True)
+class PathPoint:
+    x: float
+    y: float
+
+
+class Path:
     """
-    Builds 2D geometry.
+    Represents a 2D CAD path.
     """
 
     def __init__(self):
 
-        self._points = []
+        self._points: list[PathPoint] = []
+        self._closed = False
 
     @property
     def points(self):
 
         return self._points
 
+    @property
+    def closed(self):
+
+        return self._closed
+
     def move_to(self, x: float, y: float):
 
-        self._points = [(x, y)]
+        self._points = [PathPoint(x, y)]
 
         return self
 
     def line_to(self, x: float, y: float):
 
-        self._points.append((x, y))
+        self._points.append(PathPoint(x, y))
 
         return self
 
     def close(self):
 
-        if self._points and self._points[0] != self._points[-1]:
-            self._points.append(self._points[0])
+        self._closed = True
 
         return self
 
     def clear(self):
 
         self._points.clear()
+        self._closed = False
 
         return self
