@@ -2,89 +2,51 @@
 LuxeForge Studio
 
 Body generator.
-
-Version:
-    v0.1.0-alpha.2
 """
 
 from __future__ import annotations
 
-import bpy
+from luxeforge_studio.geometry.mesh_builder import MeshBuilder
+from luxeforge_studio.models.bag_parameters import BagParameters
 
 
 class BodyGenerator:
     """Generates the basic bag body."""
 
-    OBJECT_NAME = "LFS_Bag"
+    def generate(self, params: BagParameters):
 
-    def generate(
-        self,
-        *,
-        width: float,
-        height: float,
-        depth: float,
-        wall: float,
-        radius: float,
-        flap_length: float,
-        flap_thickness: float,
-    ) -> bpy.types.Object:
-        """
-        Generate the base body.
+        w = params.width / 2
+        d = params.depth / 2
+        h = params.height
 
-        Parameters are currently stored for future use.
-        Version alpha.2 creates only a scaled body.
-        """
+        vertices = [
 
-        # --------------------------------------------------
-        # Remove old generated object
-        # --------------------------------------------------
+            (-w, -d, 0),
+            ( w, -d, 0),
+            ( w,  d, 0),
+            (-w,  d, 0),
 
-        existing = bpy.data.objects.get(self.OBJECT_NAME)
+            (-w, -d, h),
+            ( w, -d, h),
+            ( w,  d, h),
+            (-w,  d, h),
 
-        if existing:
-            bpy.data.objects.remove(existing, do_unlink=True)
+        ]
 
-        # --------------------------------------------------
-        # Create cube
-        # --------------------------------------------------
+        faces = [
 
-        bpy.ops.mesh.primitive_cube_add(
-            location=(0.0, 0.0, height / 2.0)
+            (0, 1, 2, 3),
+            (4, 5, 6, 7),
+
+            (0, 1, 5, 4),
+            (1, 2, 6, 5),
+            (2, 3, 7, 6),
+            (3, 0, 4, 7),
+
+        ]
+
+        return MeshBuilder.create_mesh(
+            "LFS_Bag",
+            vertices,
+            faces,
         )
-
-        obj = bpy.context.active_object
-        obj.name = self.OBJECT_NAME
-
-        # Blender cube = 2x2x2
-        obj.scale = (
-            width / 2.0,
-            depth / 2.0,
-            height / 2.0,
-        )
-
-        # --------------------------------------------------
-        # Apply scale
-        # --------------------------------------------------
-
-        bpy.ops.object.transform_apply(
-            location=False,
-            rotation=False,
-            scale=True,
-        )
-
-        # --------------------------------------------------
-        # Shade smooth
-        # --------------------------------------------------
-
-        bpy.ops.object.shade_smooth()
-
-        # --------------------------------------------------
-        # Future:
-        #
-        # - Bevel Modifier
-        # - Solidify
-        # - Flap
-        # - Quilting
-        # --------------------------------------------------
-
-        return obj
