@@ -45,8 +45,20 @@ class BodyGenerator:
 
         ]
 
-        return MeshBuilder.create_mesh(
+        obj = MeshBuilder.create_mesh(
             "LFS_Bag",
             vertices,
             faces,
         )
+
+        # Prototype: afgeronde hoeken
+        bevel = obj.modifiers.new(
+            name="LFS_Bevel",
+            type="BEVEL",
+        )
+
+        bevel.width = params.corner_radius
+        bevel.segments = 6
+        bevel.limit_method = "NONE"
+
+        return obj

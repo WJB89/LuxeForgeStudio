@@ -1,7 +1,9 @@
 import bpy
 
-from luxeforge_studio.models.bag_parameters import BagParameters
-from luxeforge_studio.services.bag_service import BagService
+from .models.bag_parameters import BagParameters
+from .services.bag_service import BagService
+from .geometry.profile_generator import ProfileGenerator
+from .utils.logger import log
 
 
 class LFS_OT_GenerateBag(bpy.types.Operator):
@@ -13,6 +15,11 @@ class LFS_OT_GenerateBag(bpy.types.Operator):
     def execute(self, context):
 
         params = BagParameters()
+
+        profile = ProfileGenerator().generate(params)
+
+        log("Generated profile:")
+        log(str(profile))
 
         service = BagService()
 

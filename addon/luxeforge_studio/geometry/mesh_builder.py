@@ -36,9 +36,11 @@ class MeshBuilder:
 
         # Selecteer object
         bpy.ops.object.select_all(action="DESELECT")
-
         obj.select_set(True)
-
         bpy.context.view_layer.objects.active = obj
+
+        # Smooth shading
+        for poly in mesh.polygons:
+            poly.use_smooth = True
 
         return obj
