@@ -6,8 +6,8 @@ Body generator.
 
 from __future__ import annotations
 
-from luxeforge_studio.geometry.mesh_builder import MeshBuilder
-from luxeforge_studio.models.bag_parameters import BagParameters
+from ..geometry.mesh_builder import MeshBuilder
+from ..models.bag_parameters import BagParameters
 
 
 class BodyGenerator:

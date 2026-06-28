@@ -1,15 +1,24 @@
 import bpy
 
+from luxeforge_studio.models.bag_parameters import BagParameters
+from luxeforge_studio.services.bag_service import BagService
+
 
 class LFS_OT_GenerateBag(bpy.types.Operator):
-    """Temporary Generate Bag operator."""
+    """Generate a bag."""
 
     bl_idname = "lfs.generate_bag"
     bl_label = "Generate Bag"
 
     def execute(self, context):
-        self.report({"INFO"}, "Generate Bag clicked!")
-        print("Generate Bag clicked!")
+
+        params = BagParameters()
+
+        service = BagService()
+
+        service.generate(params)
+
+        self.report({"INFO"}, "Bag generated.")
 
         return {"FINISHED"}
 
