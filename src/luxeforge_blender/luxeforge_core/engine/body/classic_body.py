@@ -6,30 +6,34 @@ Classic Body Engine
 
 from __future__ import annotations
 
-from .profiles.classic_profile import ClassicProfile
-from ...geometry.extruder import Extruder
-from ...models.bag_parameters import BagParameters
 from ...geometry.mesh_data import MeshData
+from ...models.bag_parameters import BagParameters
+
+from .body_builder import BodyBuilder
+from .profiles.classic_profile import ClassicProfile
 
 
 class ClassicBodyEngine:
     """
-    Generates the 3D body of the Classic bag.
+    Generates the body of the Classic bag.
     """
+
+    def __init__(self) -> None:
+
+        self._profile = ClassicProfile()
+        self._builder = BodyBuilder()
 
     def build(
         self,
         params: BagParameters,
     ) -> MeshData:
         """
-        Builds the Classic bag body.
+        Generates a complete body mesh.
         """
 
-        profile = ClassicProfile().build(params)
+        profile = self._profile.build(params)
 
-        mesh = Extruder().extrude(
+        return self._builder.build(
             profile,
-            params.depth,
+            params,
         )
-
-        return mesh

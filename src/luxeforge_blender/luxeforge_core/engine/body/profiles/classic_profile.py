@@ -6,61 +6,39 @@ Classic Body Profile
 
 from __future__ import annotations
 
+from ....geometry.builders.rounded_rectangle import (
+    RoundedRectangleBuilder,
+)
 from ....geometry.path import Path
 from ....models.bag_parameters import BagParameters
 
 
 class ClassicProfile:
     """
-    Generates the 2D outline of the Classic bag.
+    Generates the Classic bag profile.
 
-    This class is responsible only for generating
-    the 2D profile. It does not create meshes or
-    interact with Blender.
+    The profile delegates the actual geometry creation
+    to the RoundedRectangleBuilder.
     """
 
-    #
-    # Design constants
-    #
+    def __init__(self) -> None:
 
-    SHOULDER_HEIGHT = 0.80
-    SHOULDER_WIDTH = 0.90
+        self._builder = RoundedRectangleBuilder()
 
     def build(
         self,
         params: BagParameters,
     ) -> Path:
         """
-        Builds the classic bag profile.
-
-        Parameters
-        ----------
-        params
-            Bag dimensions.
-
-        Returns
-        -------
-        Path
-            Closed 2D outline.
+        Builds the Classic bag outline.
         """
 
-        half_width = params.width / 2
-        height = params.height
-
-        shoulder_y = height * self.SHOULDER_HEIGHT
-        shoulder_x = half_width * self.SHOULDER_WIDTH
-
-        path = Path()
-
-        (
-            path
-            .move_to(-half_width, 0)
-            .line_to(-half_width, shoulder_y)
-            .line_to(-shoulder_x, height)
-            .line_to(shoulder_x, height)
-            .line_to(half_width, shoulder_y)
-            .line_to(half_width, 0)
-            .close()
+        return self._builder.build(
+            width=params.width,
+            height=params.height,
+            shoulder_width_ratio=params.shoulder_width_ratio,
+            shoulder_height_ratio=params.shoulder_height_ratio,
+            top_radius=params.top_corner_radius,
+            bottom_radius=params.bottom_corner_radius,
+            segments=12,
         )
-
-        return path

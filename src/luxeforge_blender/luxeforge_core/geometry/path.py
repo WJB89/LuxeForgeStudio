@@ -74,6 +74,19 @@ class Path:
 
         return self
 
+    def line_to_point(
+        self,
+        point: Point,
+    ) -> "Path":
+        """
+        Adds a line to an existing point.
+        """
+
+        return self.line_to(
+            point.x,
+            point.y,
+        )
+
     def add_points(
         self,
         points: list[Point],
@@ -86,6 +99,10 @@ class Path:
         """
 
         if not points:
+            return self
+
+        if len(points) == 1:
+            self._points.extend(points)
             return self
 
         self._points.extend(points[1:])

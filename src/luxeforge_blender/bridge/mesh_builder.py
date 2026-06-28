@@ -2,8 +2,6 @@
 LuxeForge Studio
 
 Mesh Builder
-
-Converts MeshData into a Blender mesh.
 """
 
 from __future__ import annotations
@@ -15,7 +13,7 @@ from ..luxeforge_core.geometry.mesh_data import MeshData
 
 class MeshBuilder:
     """
-    Creates Blender mesh objects from MeshData.
+    Converts MeshData into a Blender object.
     """
 
     @staticmethod
@@ -23,9 +21,10 @@ class MeshBuilder:
         name: str,
         mesh_data: MeshData,
     ) -> bpy.types.Object:
-        """
-        Creates a Blender object from MeshData.
-        """
+
+        #
+        # Create mesh datablock
+        #
 
         mesh = bpy.data.meshes.new(name)
 
@@ -37,6 +36,10 @@ class MeshBuilder:
 
         mesh.update()
 
+        #
+        # Create object
+        #
+
         obj = bpy.data.objects.new(
             name,
             mesh,
@@ -44,8 +47,66 @@ class MeshBuilder:
 
         bpy.context.collection.objects.link(obj)
 
-        bpy.context.view_layer.objects.active = obj
+        #
+        # Make active
+        #
+
+        bpy.ops.object.select_all(action="DESELECT")
 
         obj.select_set(True)
+
+        bpy.context.view_layer.objects.active = obj
+
+        #
+        # Smooth shading
+        #
+
+        try:
+
+            mesh.shade_smooth()
+
+        except AttributeError:
+
+            for polygon in mesh.polygons:
+                polygon.use_smooth = True
+
+        #
+        # Bevel modifier
+        #
+
+        bevel = obj.modifiers.new(
+            "LFS_Bevel",
+            "BEVEL",
+        )
+
+        bevel.width = 0.5
+        bevel.segments = 2
+        bevel.limit_method = "ANGLE"
+
+        #
+        # Subdivision Surface
+        #
+
+        subdivision = obj.modifiers.new(
+            "LFS_Subdivision",
+            "SUBSURF",
+        )
+
+        subdivision.levels = 1
+        subdivision.render_levels = 2
+
+        #
+        # Auto smooth (Blender version dependent)
+        #
+
+        try:
+
+            mesh.use_auto_smooth = True
+            mesh.auto_smooth_angle = 1.0472
+
+        except AttributeError:
+
+            # Blender 5.x may use Smooth by Angle instead.
+            pass
 
         return obj
