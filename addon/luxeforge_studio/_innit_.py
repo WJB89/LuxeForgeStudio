@@ -1,17 +1,24 @@
 bl_info = {
     "name": "LuxeForge Studio",
     "author": "Wesley",
-    "description": "Parametric luxury accessory generator",
-    "blender": (5, 0, 0),
     "version": (0, 1, 0),
-    "location": "View3D > Sidebar",
-    "category": "Add Mesh",
+    "blender": (5, 0, 0),
+    "location": "View3D > Sidebar > LuxeForge",
+    "description": "LuxeForge Studio",
+    "category": "3D View",
 }
+
+import bpy
+from . import panel
 
 
 def register():
-    print("LuxeForge Studio loaded.")
+    panel.register()
 
 
 def unregister():
-    print("LuxeForge Studio unloaded.")
+    panel.unregister()
+
+
+if __name__ == "__main__":
+    register()
