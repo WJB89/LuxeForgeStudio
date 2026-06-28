@@ -1,64 +1,46 @@
 """
 LuxeForge Studio
 
-Body generator.
+Body Generator
 """
 
 from __future__ import annotations
 
+from ..geometry.path import Path
+from ..geometry.extruder import Extruder
 from ..geometry.mesh_builder import MeshBuilder
+
 from ..models.bag_parameters import BagParameters
 
 
 class BodyGenerator:
-    """Generates the basic bag body."""
+    """
+    Generates the procedural handbag body.
+    """
 
     def generate(self, params: BagParameters):
 
         w = params.width / 2
-        d = params.depth / 2
         h = params.height
 
-        vertices = [
+        path = (
+            Path()
+            .move_to(-w, 0)
+            .line_to(-w, h)
+            .line_to(w, h)
+            .line_to(w, 0)
+            .close()
+        )
 
-            (-w, -d, 0),
-            ( w, -d, 0),
-            ( w,  d, 0),
-            (-w,  d, 0),
-
-            (-w, -d, h),
-            ( w, -d, h),
-            ( w,  d, h),
-            (-w,  d, h),
-
-        ]
-
-        faces = [
-
-            (0, 1, 2, 3),
-            (4, 5, 6, 7),
-
-            (0, 1, 5, 4),
-            (1, 2, 6, 5),
-            (2, 3, 7, 6),
-            (3, 0, 4, 7),
-
-        ]
+        vertices, faces = Extruder().extrude(
+            path,
+            params.depth,
+        )
 
         obj = MeshBuilder.create_mesh(
             "LFS_Bag",
             vertices,
             faces,
         )
-
-        # Prototype: afgeronde hoeken
-        bevel = obj.modifiers.new(
-            name="LFS_Bevel",
-            type="BEVEL",
-        )
-
-        bevel.width = params.corner_radius
-        bevel.segments = 6
-        bevel.limit_method = "NONE"
 
         return obj
